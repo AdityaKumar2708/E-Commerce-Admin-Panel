@@ -1,0 +1,190 @@
+<div class="admin-layout">
+
+    <!-- MAIN AREA -->
+    <main class="main-area">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div>
+                <h1>Dashboard Overview</h1>
+                <p>Welcome back, {{ adminName || 'Admin' }}. Here's what's happening in your store.</p>
+            </div>
+
+            <div class="topbar-actions">
+
+                <button class="top-logout" type="button" (click)="logout()">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-content">
+
+            <!-- STATS -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon products-icon">▣</div>
+                        <span class="stat-label">Products</span>
+                    </div>
+                    <h2>{{ totalProducts ?? 0 }}</h2>
+                    <p>Total products in your store</p>
+                    <button type="button" class="stat-link" (click)="navigateTo('/admin/products')">
+                        View products <span>→</span>
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon orders-icon">▤</div>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                    <h2>{{ totalOrders ?? 0 }}</h2>
+                    <p>All customer orders</p>
+                    <button type="button" class="stat-link" (click)="navigateTo('/admin/orders')">
+                        View orders <span>→</span>
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon customers-icon">♙</div>
+                        <span class="stat-label">Customers</span>
+                    </div>
+                    <h2>{{ totalCustomers ?? 0 }}</h2>
+                    <p>Registered customers</p>
+                    <button type="button" class="stat-link" (click)="navigateTo('/admin/customers')">
+                        View customers <span>→</span>
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon categories-icon">▧</div>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                    <h2>{{ totalCategories ?? 0 }}</h2>
+                    <p>Product categories</p>
+                    <button type="button" class="stat-link" (click)="navigateTo('/admin/categories')">
+                        View categories <span>→</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- QUICK ACTIONS -->
+            <section class="quick-actions-section">
+                <div class="section-title">
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Manage your store from here</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions-grid">
+                    <button class="quick-action-card" type="button" (click)="navigateTo('/admin/products/add')">
+                        <div class="quick-action-icon add-product-icon">＋</div>
+                        <div>
+                            <strong>Add New Product</strong>
+                            <span>Add a product to your store</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </button>
+
+                    <button class="quick-action-card" type="button" (click)="navigateTo('/admin/products')">
+                        <div class="quick-action-icon manage-product-icon">▣</div>
+                        <div>
+                            <strong>Manage Products</strong>
+                            <span>View, edit or remove products</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </button>
+
+                    <button class="quick-action-card" type="button" (click)="navigateTo('/admin/orders')">
+                        <div class="quick-action-icon manage-order-icon">▤</div>
+                        <div>
+                            <strong>Manage Orders</strong>
+                            <span>Review and update order status</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </button>
+
+                    <button class="quick-action-card" type="button" (click)="navigateTo('/admin/categories')">
+                        <div class="quick-action-icon add-category-icon">▧</div>
+                        <div>
+                            <strong>Manage Categories</strong>
+                            <span>Create or update categories</span>
+                        </div>
+                        <span class="quick-arrow">→</span>
+                    </button>
+
+                    <!-- MANAGE COUPONS -->
+                    <button class="quick-action-card" type="button" (click)="navigateTo('/admin/coupons')">
+                        <div class="quick-action-icon coupon-icon">%</div>
+
+                        <div>
+                            <strong>Manage Coupons</strong>
+                            <span>Create, edit or manage discount coupons</span>
+                        </div>
+
+                        <span class="quick-arrow">→</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- RECENT ORDERS -->
+            <section class="recent-orders-section">
+                <div class="section-title orders-title">
+                    <div>
+                        <h2>Recent Orders</h2>
+                        <p>Latest orders placed by your customers</p>
+                    </div>
+
+                    <button class="view-all-button" type="button" (click)="navigateTo('/admin/orders')">
+                        View All Orders <span>→</span>
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let order of recentOrders">
+                                <td class="order-id">#{{ order.id }}</td>
+                                <td>{{ order.customerName }}</td>
+                                <td>{{ order.date }}</td>
+                                <td class="order-amount">₹{{ order.amount }}</td>
+                                <td>
+                                    <span class="order-status" [ngClass]="order.status.toLowerCase()">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="view-order-button" type="button" (click)="viewOrder(order.id)">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="recentOrders.length === 0">
+                                <td colspan="6" class="no-orders">
+                                    No orders to display yet.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>

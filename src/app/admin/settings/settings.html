@@ -1,0 +1,141 @@
+<div class="page-container">
+
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">STORE MANAGEMENT</span>
+            <h1>Settings</h1>
+            <p>Manage your store information and preferences.</p>
+        </div>
+
+        <div class="header-icon">
+            <span>⚙</span>
+        </div>
+    </header>
+
+    <div class="notice-banner">
+        <span class="notice-icon">i</span>
+        <p>
+            These settings are saved in this browser. They are not yet synced
+            with the backend database.
+        </p>
+    </div>
+
+    <form #settingsForm="ngForm" (ngSubmit)="saveSettings()">
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div class="heading-icon store-icon">▦</div>
+                <div>
+                    <h2>Store Information</h2>
+                    <p>Basic information about your business.</p>
+                </div>
+            </div>
+
+            <div class="settings-grid">
+
+                <div class="form-group full-width">
+                    <label for="storeName">Store Name <span>*</span></label>
+                    <input id="storeName" name="storeName" type="text" [(ngModel)]="storeName" required maxlength="120"
+                        placeholder="Enter your store name">
+                    <small>This name identifies your store in the admin panel.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="supportEmail">Support Email</label>
+                    <input id="supportEmail" name="supportEmail" type="email" [(ngModel)]="supportEmail" email
+                        placeholder="support@example.com">
+                    <small>Customer support email address.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="supportPhone">Support Phone</label>
+                    <input id="supportPhone" name="supportPhone" type="tel" [(ngModel)]="supportPhone" maxlength="20"
+                        placeholder="Enter support phone">
+                    <small>Phone number customers can contact.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Store Currency</label>
+                    <select id="currency" name="currency" [(ngModel)]="currency">
+                        <option value="INR">INR — Indian Rupee (₹)</option>
+                    </select>
+                    <small>Used as the store's configured currency.</small>
+                </div>
+
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="section-heading">
+                <div class="heading-icon notification-icon">♧</div>
+                <div>
+                    <h2>Notification Preferences</h2>
+                    <p>Choose the notifications you want to enable.</p>
+                </div>
+            </div>
+
+            <div class="notification-list">
+
+                <div class="setting-row">
+                    <div class="setting-description">
+                        <div class="setting-symbol email-symbol">✉</div>
+                        <div>
+                            <strong>Email Notifications</strong>
+                            <p>Enable general store email notification preferences.</p>
+                        </div>
+                    </div>
+
+                    <label class="toggle">
+                        <input type="checkbox" name="emailNotifications" [(ngModel)]="emailNotifications">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-description">
+                        <div class="setting-symbol order-symbol">▤</div>
+                        <div>
+                            <strong>Order Notifications</strong>
+                            <p>Enable preferences for alerts about new orders.</p>
+                        </div>
+                    </div>
+
+                    <label class="toggle">
+                        <input type="checkbox" name="orderNotifications" [(ngModel)]="orderNotifications">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+
+            </div>
+
+            <div class="feedback success-message" *ngIf="successMessage">
+                <span>✓</span>
+                {{ successMessage }}
+            </div>
+
+            <div class="feedback error-message" *ngIf="errorMessage">
+                <span>!</span>
+                {{ errorMessage }}
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="reset-btn" (click)="resetSettings()">
+                    Reset Form
+                </button>
+
+                <button type="submit" class="save-btn" [disabled]="saving || settingsForm.invalid">
+                    <span>{{ saving ? 'Saving...' : '✓ Save Settings' }}</span>
+                </button>
+            </div>
+
+        </section>
+
+    </form>
+
+    <footer class="page-footer">
+        <span class="footer-dot"></span>
+        Your store preferences
+    </footer>
+
+</div>

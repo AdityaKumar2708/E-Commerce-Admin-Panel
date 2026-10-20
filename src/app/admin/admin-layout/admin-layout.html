@@ -1,0 +1,42 @@
+<div class="admin-layout">
+
+    <header class="admin-navbar">
+
+        <a routerLink="/admin/dashboard" class="brand">
+            <span class="brand-icon">R</span>
+            <span>Rajesh Stationery</span>
+        </a>
+
+        <nav class="nav-links">
+            <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+                Dashboard
+            </a>
+
+            <a routerLink="/admin/products" routerLinkActive="active">
+                Products
+            </a>
+
+            <a routerLink="/admin/orders" routerLinkActive="active">
+                Orders
+            </a>
+
+            <a routerLink="/admin/customers" routerLinkActive="active">
+                Customers
+            </a>
+
+            <a routerLink="/admin/categories" routerLinkActive="active">
+                Categories
+            </a>
+
+            <a routerLink="/admin/settings" routerLinkActive="active">
+                Settings
+            </a>
+        </nav>
+
+    </header>
+
+    <main class="admin-content">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>

@@ -1,0 +1,151 @@
+<div class="page-container">
+
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">STORE MANAGEMENT</span>
+            <h1>Categories</h1>
+            <p>View product categories and the products assigned to each one.</p>
+        </div>
+
+        <button type="button" class="refresh-btn" (click)="loadCategories()" [disabled]="loading">
+            <span>{{ loading ? 'Loading...' : '↻ Refresh' }}</span>
+        </button>
+    </header>
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon category-icon">▦</div>
+            <div>
+                <span>Total Categories</span>
+                <h2>{{ categories.length }}</h2>
+                <p>Unique product categories</p>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon products-icon">▣</div>
+            <div>
+                <span>Total Products</span>
+                <h2>{{ totalProducts }}</h2>
+                <p>Products across listed categories</p>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon active-icon">✓</div>
+            <div>
+                <span>Active Categories</span>
+                <h2>{{ activeCategories }}</h2>
+                <p>Categories with active products</p>
+            </div>
+        </article>
+    </section>
+
+    <div class="error-alert" *ngIf="errorMessage">
+        <span>!</span>
+        <div>
+            <strong>Unable to load categories</strong>
+            <p>{{ errorMessage }}</p>
+            <button type="button" (click)="loadCategories()">Try Again</button>
+        </div>
+    </div>
+
+    <section class="content-card">
+
+        <div class="section-heading">
+            <div>
+                <h2>All Categories</h2>
+                <p>Categories are derived from your existing product data.</p>
+            </div>
+
+            <span class="count-pill">
+                {{ filteredCategories.length }} shown
+            </span>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="search" [(ngModel)]="searchText" placeholder="Search category..."
+                    aria-label="Search categories">
+            </div>
+        </div>
+
+        <div class="loading-state" *ngIf="loading">
+            <div class="spinner"></div>
+            <h3>Loading categories...</h3>
+            <p>Fetching products from the backend.</p>
+        </div>
+
+        <div class="table-wrapper" *ngIf="!loading && !errorMessage && filteredCategories.length > 0">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Products</th>
+                        <th>Active Products</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let category of filteredCategories">
+                        <td>
+                            <div class="category-cell">
+                                <div class="category-avatar">
+                                    {{ category.name.charAt(0).toUpperCase() }}
+                                </div>
+                                <strong>{{ category.name }}</strong>
+                            </div>
+                        </td>
+
+                        <td class="description">
+                            {{ category.description }}
+                        </td>
+
+                        <td>
+                            <span class="product-count">
+                                {{ category.productCount }}
+                            </span>
+                        </td>
+
+                        <td>{{ category.activeProductCount }}</td>
+
+                        <td>
+                            <span class="status-badge" [ngClass]="category.active ? 'active' : 'inactive'">
+                                <span class="status-dot"></span>
+                                {{ category.active ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" *ngIf="!loading && !errorMessage && filteredCategories.length === 0">
+
+            <div class="empty-icon">▦</div>
+
+            <h3>
+                {{ searchText ? 'No matching categories' : 'No categories found' }}
+            </h3>
+
+            <p>
+                {{ searchText
+                ? 'Try a different category name.'
+                : 'Categories will appear here when products have category names assigned.' }}
+            </p>
+
+            <button *ngIf="searchText" type="button" class="clear-btn" (click)="searchText = ''">
+                Clear Search
+            </button>
+        </div>
+
+        <div class="footer-note" *ngIf="!loading && !errorMessage">
+            Category totals are calculated from the products returned by the API.
+        </div>
+
+    </section>
+</div>

@@ -1,0 +1,624 @@
+<div class="products-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+
+        <div class="header-content">
+
+            <div class="breadcrumb">
+                <span>Admin</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="current">Products</span>
+            </div>
+
+            <h1>Product Management</h1>
+
+            <p>
+                Manage your store products, prices, stock and availability.
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <button class="btn btn-outline" type="button" (click)="loadProducts()">
+                <span class="btn-icon">↻</span>
+                Refresh
+            </button>
+
+
+            <!-- ADD ONLINE PRODUCT -->
+            <button class="btn btn-primary" type="button" (click)="addOnlineProduct()">
+                <span class="btn-icon">＋</span>
+                Add Online Product
+            </button>
+
+
+            <!-- ADD STORE PICKUP PRODUCT -->
+            <button class="btn btn-pickup" type="button" (click)="addStorePickupProduct()">
+                <span class="btn-icon">＋</span>
+                Add Store Pickup
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUMMARY CARDS -->
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon products-icon">
+                ▣
+            </div>
+
+            <div class="summary-info">
+
+                <span class="summary-label">
+                    Total Products
+                </span>
+
+                <h2>
+                    {{ products.length }}
+                </h2>
+
+                <span class="summary-note">
+                    Products in catalogue
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon active-icon">
+                ✓
+            </div>
+
+            <div class="summary-info">
+
+                <span class="summary-label">
+                    Active Products
+                </span>
+
+                <h2>
+                    {{ activeProductsCount }}
+                </h2>
+
+                <span class="summary-note">
+                    Currently available
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon stock-icon">
+                ▤
+            </div>
+
+            <div class="summary-info">
+
+                <span class="summary-label">
+                    Out of Stock
+                </span>
+
+                <h2>
+                    {{ outOfStockCount }}
+                </h2>
+
+                <span class="summary-note">
+                    Require restocking
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-icon category-icon">
+                ▦
+            </div>
+
+            <div class="summary-info">
+
+                <span class="summary-label">
+                    Categories
+                </span>
+
+                <h2>
+                    {{ categories.length - 1 }}
+                </h2>
+
+                <span class="summary-note">
+                    Product categories
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCT TABLE CARD -->
+    <div class="products-card">
+
+
+        <!-- TABLE HEADER -->
+        <div class="table-header">
+
+            <div>
+
+                <h2>
+                    Products
+                </h2>
+
+                <p>
+                    View and manage your product catalogue.
+                </p>
+
+            </div>
+
+
+            <div class="table-count">
+
+                {{ filteredProducts.length }}
+                products
+
+            </div>
+
+        </div>
+
+
+        <!-- FILTERS -->
+        <div class="filter-bar">
+
+
+            <!-- SEARCH -->
+            <div class="search-box">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input type="text" placeholder="Search by product name, SKU or category..." [(ngModel)]="searchText"
+                    (ngModelChange)="applyFilters()" />
+
+                <button *ngIf="searchText" class="clear-search" type="button" (click)="searchText = ''; applyFilters()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- SALES CHANNEL FILTER -->
+            <div class="sales-channel-filter">
+
+                <button type="button" class="channel-filter-btn" [class.active]="selectedSalesChannel === 'ALL'"
+                    (click)="selectSalesChannel('ALL')">
+                    All
+                </button>
+
+
+                <button type="button" class="channel-filter-btn online-filter"
+                    [class.active]="selectedSalesChannel === 'ONLINE'" (click)="selectSalesChannel('ONLINE')">
+                    Online
+                </button>
+
+
+                <button type="button" class="channel-filter-btn pickup-filter"
+                    [class.active]="selectedSalesChannel === 'STORE_PICKUP'"
+                    (click)="selectSalesChannel('STORE_PICKUP')">
+                    Store Pickup
+                </button>
+
+            </div>
+
+
+            <!-- CATEGORY FILTER -->
+            <div class="category-filter">
+
+                <select [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()">
+
+                    <option *ngFor="let category of categories" [value]="category">
+                        {{
+                        category === 'All'
+                        ? 'All Categories'
+                        : category
+                        }}
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE FILTER INFO -->
+        <div class="active-filter-info" *ngIf="
+                selectedSalesChannel !== 'ALL' ||
+                selectedCategory !== 'All' ||
+                searchText
+            ">
+
+            <span>
+                Showing:
+
+                <strong>
+                    {{
+                    selectedSalesChannel === 'ALL'
+                    ? 'All Products'
+                    : selectedSalesChannel === 'ONLINE'
+                    ? 'Online Products'
+                    : 'Store Pickup Products'
+                    }}
+                </strong>
+            </span>
+
+
+            <button type="button" (click)="clearFilters()">
+                Clear Filters
+            </button>
+
+        </div>
+
+
+        <!-- LOADING -->
+        <div class="state-container" *ngIf="loading">
+
+            <div class="loader"></div>
+
+            <p>
+                Loading products...
+            </p>
+
+        </div>
+
+
+        <!-- ERROR -->
+        <div class="state-container error-state" *ngIf="!loading && errorMessage">
+
+            <div class="state-icon">
+                !
+            </div>
+
+            <h3>
+                Unable to load products
+            </h3>
+
+            <p>
+                {{ errorMessage }}
+            </p>
+
+            <button class="btn btn-primary" type="button" (click)="loadProducts()">
+                Try Again
+            </button>
+
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="table-wrapper" *ngIf="!loading && !errorMessage">
+
+            <table *ngIf="
+                    filteredProducts.length > 0;
+                    else emptyProducts
+                ">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            PRODUCT
+                        </th>
+
+                        <th>
+                            SKU
+                        </th>
+
+                        <th>
+                            CATEGORY
+                        </th>
+
+                        <th>
+                            TYPE
+                        </th>
+
+                        <th>
+                            PRICE
+                        </th>
+
+                        <th>
+                            STOCK
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th class="actions-heading">
+                            ACTIONS
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr *ngFor="let product of filteredProducts">
+
+                        <!-- PRODUCT -->
+                        <td>
+
+                            <div class="product-info">
+
+                                <div class="product-image">
+
+                                    <img *ngIf="product.imageUrl" [src]="product.imageUrl" [alt]="product.name" (error)="
+                                            $any($event.target).style.display = 'none'
+                                        " />
+
+                                    <span *ngIf="!product.imageUrl">
+                                        {{
+                                        product.name
+                                        .charAt(0)
+                                        .toUpperCase()
+                                        }}
+                                    </span>
+
+                                </div>
+
+
+                                <div class="product-details">
+
+                                    <strong>
+                                        {{ product.name }}
+                                    </strong>
+
+                                    <small>
+                                        {{
+                                        product.description ||
+                                        'No description available'
+                                        }}
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- SKU -->
+                        <td>
+
+                            <span class="sku-text">
+                                {{ product.sku || '—' }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- CATEGORY -->
+                        <td>
+
+                            <span class="category-tag">
+                                {{ product.category }}
+                            </span>
+
+                        </td>
+
+
+                        <!-- TYPE -->
+                        <td>
+
+                            <span class="sales-channel-badge" [ngClass]="{
+                                    'channel-online':
+                                        product.salesChannel === 'ONLINE',
+
+                                    'channel-pickup':
+                                        product.salesChannel === 'STORE_PICKUP'
+                                }">
+
+                                {{
+                                product.salesChannel === 'STORE_PICKUP'
+                                ? 'Store Pickup'
+                                : 'Online'
+                                }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- PRICE -->
+                        <td>
+
+                            <div class="price-info">
+
+                                <strong>
+                                    {{
+                                    product.price
+                                    | currency:'INR':'symbol':'1.2-2'
+                                    }}
+                                </strong>
+
+                                <small *ngIf="
+                                        product.originalPrice &&
+                                        product.originalPrice > product.price
+                                    ">
+                                    {{
+                                    product.originalPrice
+                                    | currency:'INR':'symbol':'1.2-2'
+                                    }}
+                                </small>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- STOCK -->
+                        <td>
+
+                            <span class="stock-badge" [ngClass]="{
+                                    'stock-out':
+                                        product.stock <= 0,
+
+                                    'stock-low':
+                                        product.stock > 0 &&
+                                        product.stock <= 10,
+
+                                    'stock-good':
+                                        product.stock > 10
+                                }">
+
+                                {{
+                                product.stock <= 0 ? 'Out of stock' : product.stock + ' units' }} </span>
+
+                        </td>
+
+
+                        <!-- STATUS -->
+                        <td>
+
+                            <span class="status-badge" [ngClass]="
+                                    product.active
+                                        ? 'status-active'
+                                        : 'status-inactive'
+                                ">
+
+                                <span class="status-dot"></span>
+
+                                {{
+                                product.active
+                                ? 'Active'
+                                : 'Inactive'
+                                }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ACTIONS -->
+                        <td>
+
+                            <div class="action-buttons">
+
+                                <button class="action-btn edit-btn" type="button" title="Edit Product"
+                                    (click)="editProduct(product.id)">
+                                    ✎
+                                </button>
+
+
+                                <button class="action-btn delete-btn" type="button" title="Delete Product"
+                                    (click)="deleteProduct(product)">
+                                    ♲
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+
+            <!-- EMPTY STATE -->
+            <ng-template #emptyProducts>
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ▣
+                    </div>
+
+                    <h3>
+                        No products found
+                    </h3>
+
+
+                    <p *ngIf="
+                            searchText ||
+                            selectedCategory !== 'All' ||
+                            selectedSalesChannel !== 'ALL'
+                        ">
+                        Try changing your search or filters.
+                    </p>
+
+
+                    <p *ngIf="
+                            !searchText &&
+                            selectedCategory === 'All' &&
+                            selectedSalesChannel === 'ALL'
+                        ">
+                        Your product catalogue is empty.
+                        Add your first product to get started.
+                    </p>
+
+
+                    <button *ngIf="
+                            !searchText &&
+                            selectedCategory === 'All' &&
+                            selectedSalesChannel === 'ALL'
+                        " class="btn btn-primary" type="button" (click)="addOnlineProduct()">
+                        ＋ Add Online Product
+                    </button>
+
+                </div>
+
+            </ng-template>
+
+        </div>
+
+
+        <!-- TABLE FOOTER -->
+        <div class="table-footer" *ngIf="
+                !loading &&
+                !errorMessage &&
+                filteredProducts.length > 0
+            ">
+
+            <span>
+
+                Showing
+
+                <strong>
+                    {{ filteredProducts.length }}
+                </strong>
+
+                of
+
+                <strong>
+                    {{ products.length }}
+                </strong>
+
+                products
+
+            </span>
+
+        </div>
+
+
+    </div>
+
+</div>

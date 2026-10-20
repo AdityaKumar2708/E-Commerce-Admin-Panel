@@ -1,0 +1,263 @@
+<div class="form-page">
+
+    <div class="form-header">
+        <div>
+            <h1>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h1>
+            <p>
+                {{
+                isEditMode
+                ? 'Update the product information below.'
+                : 'Enter the details to add a new product.'
+                }}
+            </p>
+        </div>
+
+        <button class="back-btn" type="button" (click)="cancel()">
+            ← Back to Products
+        </button>
+    </div>
+
+    <div class="form-card">
+
+        <div class="loading-box" *ngIf="loading">
+            Loading product details...
+        </div>
+
+        <form *ngIf="!loading" #productForm="ngForm" (ngSubmit)="saveProduct()">
+
+            <div class="section-heading">
+                <h2>Basic Information</h2>
+                <p>Enter the product's basic details.</p>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="name">Product Name <span>*</span></label>
+                    <input id="name" type="text" name="name" [(ngModel)]="product.name" placeholder="Enter product name"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category <span>*</span></label>
+                    <input id="category" type="text" name="category" [(ngModel)]="product.category"
+                        placeholder="e.g. Stationery" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" [(ngModel)]="product.description" rows="4"
+                        placeholder="Enter product description">
+                    </textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="sku">SKU <span>*</span></label>
+                    <input id="sku" type="text" name="sku" [(ngModel)]="product.sku" placeholder="e.g. PEN-001"
+                        required>
+                </div>
+
+            </div>
+
+            <!-- MULTIPLE PRODUCT IMAGES -->
+            <div class="section-heading">
+                <h2>Product Images</h2>
+                <p>Select multiple images for this product.</p>
+            </div>
+
+            <div class="image-upload-section">
+
+                <label class="image-upload-box" for="productImages">
+                    <span class="upload-icon">＋</span>
+                    <strong>Choose Product Images</strong>
+                    <small>JPG, PNG, WEBP or GIF. Maximum 10 MB per image.</small>
+                    <span class="upload-button">Browse Images</span>
+                </label>
+
+                <input id="productImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden
+                    [disabled]="saving" (change)="onImagesSelected($event)">
+
+                <p class="image-count" *ngIf="images.length > 0">
+                    {{ images.length }} image(s) selected
+                </p>
+
+                <div class="image-preview-grid" *ngIf="images.length > 0">
+
+                    <div class="image-preview-card" *ngFor="let image of images; let i = index">
+
+                        <img [src]="getPreviewUrl(image.url)" [alt]="'Product image ' + (i + 1)">
+
+                        <span class="primary-image-label" *ngIf="i === 0">
+                            Primary Image
+                        </span>
+
+                        <span class="image-type-label">
+                            {{ image.file ? 'New Image' : 'Saved Image' }}
+                        </span>
+
+                        <button type="button" class="remove-image-btn" (click)="removeImage(i)" [disabled]="saving"
+                            aria-label="Remove image">
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <p class="upload-status" *ngIf="uploadingImages">
+                    Uploading images, please wait...
+                </p>
+
+            </div>
+
+            <div class="section-heading">
+                <h2>Pricing & Inventory</h2>
+                <p>Enter product costs and margin. Selling price will be calculated automatically.</p>
+            </div>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="purchaseCost">Purchase Cost (₹) <span>*</span></label>
+                    <input id="purchaseCost" type="number" name="purchaseCost" [(ngModel)]="product.purchaseCost"
+                        min="0" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="packagingCost">Packaging Cost (₹) <span>*</span></label>
+                    <input id="packagingCost" type="number" name="packagingCost" [(ngModel)]="product.packagingCost"
+                        min="0" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="marginPercentage">Margin (%) <span>*</span></label>
+                    <input id="marginPercentage" type="number" name="marginPercentage"
+                        [(ngModel)]="product.marginPercentage" min="0" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="calculatedPrice">Calculated Selling Price (₹)</label>
+                    <input id="calculatedPrice" type="text" [value]="'₹' + calculatedSellingPrice" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="stock">Available Stock <span>*</span></label>
+                    <input id="stock" type="number" name="stock" [(ngModel)]="product.stock" min="0" step="1" required>
+                </div>
+
+                <div class="form-group status-group">
+                    <label>Product Status</label>
+
+                    <label class="status-toggle">
+                        <input type="checkbox" name="active" [(ngModel)]="product.active">
+                        <span>
+                            {{ product.active ? 'Active' : 'Inactive' }}
+                        </span>
+                    </label>
+                </div>
+
+            </div>
+            <!-- SALES CHANNEL SELECTOR -->
+            <div class="sales-channel-section">
+
+                <div class="section-heading">
+                    <h3>Sales Channel</h3>
+                    <p>Select where this product will be sold.</p>
+                </div>
+
+                <div class="sales-channel-options">
+
+                    <!-- ONLINE -->
+                    <label class="sales-channel-option">
+                        <input type="radio" name="salesChannel" value="ONLINE" [(ngModel)]="salesChannel">
+
+                        <div class="sales-channel-card">
+                            <div class="sales-channel-icon">🌐</div>
+
+                            <div class="sales-channel-info">
+                                <span class="sales-channel-title">Online</span>
+                                <span class="sales-channel-description">
+                                    Available for online delivery
+                                </span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <!-- STORE PICKUP -->
+                    <label class="sales-channel-option">
+                        <input type="radio" name="salesChannel" value="STORE_PICKUP" [(ngModel)]="salesChannel">
+
+                        <div class="sales-channel-card">
+                            <div class="sales-channel-icon">🏪</div>
+
+                            <div class="sales-channel-info">
+                                <span class="sales-channel-title">Store Pickup</span>
+                                <span class="sales-channel-description">
+                                    Customer collects from store
+                                </span>
+                            </div>
+                        </div>
+                    </label>
+
+                </div>
+            </div>
+
+            <!-- Only show dimensions when ONLINE is selected -->
+            <div class="section-heading" *ngIf="salesChannel === 'ONLINE'">
+                <h2>Shipping Dimensions</h2>
+                <p>Required for delivery calculations. Enter the packed product weight and size.</p>
+            </div>
+
+            <div class="form-grid" *ngIf="salesChannel === 'ONLINE'">
+                <div class="form-group">
+                    <label for="weight">Weight (kg) <span>*</span></label>
+                    <input id="weight" type="number" name="weight" [(ngModel)]="product.weight" min="0.001" step="0.001"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="length">Length (cm) <span>*</span></label>
+                    <input id="length" type="number" name="length" [(ngModel)]="product.length" min="0.51" step="0.1"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="width">Width (cm) <span>*</span></label>
+                    <input id="width" type="number" name="width" [(ngModel)]="product.width" min="0.51" step="0.1"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="height">Height (cm) <span>*</span></label>
+                    <input id="height" type="number" name="height" [(ngModel)]="product.height" min="0.51" step="0.1"
+                        required>
+                </div>
+            </div>
+
+            <div class="error-message" *ngIf="errorMessage">
+                {{ errorMessage }}
+                <a *ngIf="sessionExpired" [href]="loginUrl" target="_blank" rel="noopener noreferrer">
+                    Open Admin Login in a new tab
+                </a>
+            </div>
+
+            <div class="success-message" *ngIf="successMessage">
+                {{ successMessage }}
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="cancel-btn" (click)="cancel()" [disabled]="saving">
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-btn" [disabled]="saving || productForm.invalid">
+
+                    {{
+                    saving
+                    ? (uploadingImages ? 'Uploading Images...' : 'Saving...')
+                    : (isEditMode ? 'Update Product' : 'Save Product')
+                    }}
+
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
