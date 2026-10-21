@@ -29,7 +29,7 @@ interface Category {
 export class Categories implements OnInit {
   private http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://10.96.110.94:8080/api/products';
+  private readonly apiUrl = 'https://e-commerce-backend-kyir.onrender.com/api/products';
 
   searchText = '';
   categories: Category[] = [];

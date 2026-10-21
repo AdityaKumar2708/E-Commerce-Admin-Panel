@@ -48,7 +48,7 @@ export class AdminDashboard implements OnInit {
         status: string;
     }[] = [];
 
-    private readonly baseUrl = 'http://10.96.110.94:8080';
+    private readonly baseUrl = 'https://e-commerce-backend-kyir.onrender.com';
 
     constructor(
         private http: HttpClient,

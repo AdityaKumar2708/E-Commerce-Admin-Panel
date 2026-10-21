@@ -37,7 +37,7 @@ interface AdminOrder {
 export class Orders implements OnInit {
 
   private readonly apiUrl =
-    'http://10.96.110.94:8080/api/admin/orders';
+    'https://e-commerce-backend-kyir.onrender.com/api/admin/orders';
 
   orders: AdminOrder[] = [];
 

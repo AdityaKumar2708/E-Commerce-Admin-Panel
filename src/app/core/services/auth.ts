@@ -22,7 +22,7 @@ export interface AuthResponse {
 })
 export class AuthService {
 
-    private baseUrl = 'http://10.96.110.94:8080/api/auth';
+    private baseUrl = 'https://e-commerce-backend-kyir.onrender.com/api/auth';
 
     constructor(private http: HttpClient) { }
 

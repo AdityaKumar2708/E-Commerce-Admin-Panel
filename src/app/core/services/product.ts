@@ -26,7 +26,7 @@ export class ProductService {
 
     private http = inject(HttpClient);
 
-    private baseUrl = 'http://10.96.110.94:8080';
+    private baseUrl = 'https://e-commerce-backend-kyir.onrender.com';
     private apiUrl = `${this.baseUrl}/api/products`;
 
     private authOptions() {

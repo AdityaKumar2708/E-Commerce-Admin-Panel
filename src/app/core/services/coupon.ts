@@ -35,7 +35,7 @@ export interface Coupon {
 
 // Backend URL
 function apiBaseUrl(): string {
-    return 'http://10.96.110.94:8080';
+    return 'https://e-commerce-backend-kyir.onrender.com';
 }
 
 

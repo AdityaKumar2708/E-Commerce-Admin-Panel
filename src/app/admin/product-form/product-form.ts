@@ -54,8 +54,8 @@ export class ProductForm implements OnInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
 
-  private apiUrl = 'http://10.96.110.94:8080/api/products';
-  private baseUrl = 'http://10.96.110.94:8080';
+  private apiUrl = 'https://e-commerce-backend-kyir.onrender.com/api/products';
+  private baseUrl = 'https://e-commerce-backend-kyir.onrender.com';
 
   isEditMode = false;
   productId: number | null = null;
